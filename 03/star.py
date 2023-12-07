@@ -46,13 +46,10 @@ class Map:
                     if len(v)==2:
                         yield mul(*v)
 
-    def one(self):
-        sum_parts=0
-        for x,y,length,part_number in self.find_numbers():
+    def find_part_numbers(self):
+        for x,y,length,number in self.find_numbers():
             if any(self.is_adjacent_to_symbol(i,y) for i in range(x,x+length)):
-                sum_parts += part_number
-
-        return sum_parts;
+                yield number
 
     def __repr__(self):
         return '\n'.join(''.join(self.map[i,j] for i in range(self.w)) for j in range(self.w))
@@ -60,7 +57,7 @@ class Map:
 def one(inputs):
     m = Map(inputs)
     #print(m)
-    return m.process()
+    return sum(m.find_part_numbers())
 
 
 def two(inputs):
