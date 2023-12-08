@@ -5,25 +5,13 @@ import regex
 
 numbers = 'zero|one|two|three|four|five|six|seven|eight|nine'
 
-lookup = defaultdict(lambda x: str(x))
-for i,v in enumerate(numbers.split('|')):
-    lookup[v] = str(i)
+lookup = numbers.split('|')
+value = lambda x: lookup.index(x) if x in lookup else int(x)
 
 def parse(line, pattern):
-    matches = regex.findall(pattern, line, overlapped=True)
-    value = lookup.get(matches[0],matches[0]) + lookup.get(matches[-1],matches[-1])
-    return int(value)
-
-def one(inputs):
-    return sum([parse(line, '[0-9]') for line in inputs])
-
-def two(inputs):
-    return sum([parse(line, '[0-9]|'+numbers) for line in inputs])
-
+    m = regex.findall(pattern, line, overlapped=True)
+    return 10*value(m[0]) + value(m[-1])
 
 if __name__ == '__main__':
-    task = '1' if len(sys.argv)<2 else sys.argv[1]
-    function = one if task == '1' else two
-
-    inputs = [ line.strip() for line in sys.stdin ]
-    print(function(inputs))
+    pattern = '[0-9]' if sys.argv[1] == '1' else '[0-9]|'+numbers
+    print(sum(parse(line, pattern) for line in open(sys.argv[2])))
