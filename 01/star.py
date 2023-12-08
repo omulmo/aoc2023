@@ -1,5 +1,4 @@
 #! /usr/bin/env python3
-from collections import defaultdict
 import sys
 import regex
 
