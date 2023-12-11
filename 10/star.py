@@ -34,9 +34,7 @@ DXDY = {
 
 def find_loop(world, i, j, direction):
     loop = []
-    #print (f'START: {i,j} {direction}')
     while True:
-        #print (f'{i,j} : loop = {loop}')
         loop.append((i,j))
         (dx,dy) = DXDY[direction]
         (i,j) = (i+dx, j+dy)
@@ -44,7 +42,6 @@ def find_loop(world, i, j, direction):
             return loop
         pipe = world[i,j]
         direction = DIRECTIONS[direction].get(pipe, None)
-        #print (f'{i,j} : {pipe} -> {direction}')
         if not direction:
             return []
 
@@ -66,17 +63,6 @@ def find_direction(p, q):
     dxdy = (c-a, d-b)
     return next(filter(lambda x:x[1] == dxdy, DXDY.items()))[0]
 
-def xmatch(col):
-    return lambda pos: pos[0]==col
-
-def ymatch(pos, row):
-    _,y = pos
-    return y == row
-
-def in_box(x,y,w,h):
-    return
-
-
 def area(polygon):
     s = 0
     n = len(polygon)
@@ -89,7 +75,14 @@ def two(world, w, h):
     ((i,j), _) = next(filter(lambda item: item[1]=='S', world.items()))
     loop = sorted((find_loop(world, i, j, direction) for direction in 'NSEW'), key=lambda l:len(l), reverse=True)[0]
     edges = set(loop)
+
+    #
+    # TODO: an easier way to do this?
+    # 1. Figure out if the loop runs clock-wise or counter-clockwise.
+    # 2. Look on the inside of the loop and count all empties before next edge
+    #
     LOOK = 'ESWN' if area(loop) > 0 else 'WNES'
+
     inside = set()
     n = len(loop)
     curr_dir = find_direction(loop[n-1],loop[0])
@@ -98,15 +91,15 @@ def two(world, w, h):
         prev_dir = curr_dir
         curr_dir = find_direction(loop[i], loop[i+1])
         for dir in set([prev_dir, curr_dir]):
-            turn = LOOK['NESW'.index(dir)]
-            dx,dy = DXDY[turn]
+            look = LOOK['NESW'.index(dir)]
+            dx,dy = DXDY[look]
             x,y = (x+dx,y+dy)
-            walk=set()
+            space=set()
             while 0<=x and x<w and 0<=y and y<h and not (x,y) in edges:
-                walk.add((x,y))         
+                space.add((x,y))         
                 x,y = (x+dx,y+dy)
             if (x,y) in edges:
-                inside.update(walk)
+                inside.update(space)
     #print(f'inside: {inside}')
     return len(inside)
 
