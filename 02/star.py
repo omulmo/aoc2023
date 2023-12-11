@@ -6,10 +6,8 @@ import sys
 import re
 
 def parse(line:str):
-    [game,result] = line.split(':')
-    id = int(re.findall(r'Game (\d+)', game)[0])
-    rounds = result.split(';')
-    return id, rounds
+    [gameid, rounds] = re.findall(r'Game (\d+): (.*)$', line)
+    return int(gameid), rounds.split(';')
 
 
 def possible(round):
