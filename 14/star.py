@@ -39,24 +39,25 @@ def calc_hash(world):
 
 def two(world,w,h):
     table={calc_hash(spin(world,w,h)) : 1}
-    loads={1: calc_load(world,w,h)}
+    loads=[-1, calc_load(world,w,h)]
     spins=1
     goal = 1000000000
-    cycle = None
-    while spins != goal:
+
+    while spins <= goal:
         _hash = calc_hash(spin(world,w,h))
-        _load = calc_load(world,w,h)
+        loads.append(calc_load(world,w,h))
         spins+=1
-        loads[spins] = _load
-        print(f'{spins:3d} : {_load:7d}')
+
         if _hash in table:
             start = table[_hash]
             cycle = spins-start
             print(f'Found cycle: start={start} spins={spins} -> cycle={cycle}')
-            diff = (goal-start) % cycle
-            return loads[start+diff]
+            offset = (goal-start) % cycle
+            return loads[start+offset]
         else:
             table[_hash] = spins
+
+    assert(False)
 
 if __name__ == '__main__':
     task = '2' if len(sys.argv)<2 else sys.argv[1]
