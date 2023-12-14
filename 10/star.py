@@ -50,14 +50,6 @@ def one(world, _, __):
     loop_lengths = [ len(find_loop(world, i, j, direction)) for direction in 'NSEW' ]
     return max(loop_lengths) // 2
 
-
-def find_range(f, items):
-    a,b = sys.maxsize, 0
-    for x in map(f, items):
-        a = min(a,x)
-        b = max(b,x)
-    return (a,b+1)
-
 def find_direction(p, q):
     (a,b),(c,d) = p,q
     dxdy = (c-a, d-b)
@@ -71,7 +63,7 @@ def area(polygon):
         s += xi*yi1 - xi1*yi
     return s // 2
 
-def two(world, w, h):
+def solve(world, w, h):
     ((i,j), _) = next(filter(lambda item: item[1]=='S', world.items()))
     loop = sorted((find_loop(world, i, j, direction) for direction in 'NSEW'), key=lambda l:len(l), reverse=True)[0]
     edges = set(loop)
@@ -87,11 +79,11 @@ def two(world, w, h):
     n = len(loop)
     curr_dir = find_direction(loop[n-1],loop[0])
     for i in range(0, n-1):
-        x,y = loop[i]
         prev_dir = curr_dir
         curr_dir = find_direction(loop[i], loop[i+1])
         for dir in set([prev_dir, curr_dir]):
             look = LOOK['NESW'.index(dir)]
+            x,y = loop[i]
             dx,dy = DXDY[look]
             x,y = (x+dx,y+dy)
             space=set()
