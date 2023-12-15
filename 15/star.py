@@ -1,4 +1,5 @@
 #! /usr/bin/env python3
+from collections import OrderedDict
 import sys
 
 def calc_hash(s):
@@ -11,33 +12,16 @@ def one(inputs):
     return sum(map(calc_hash, inputs[0].split(',')))
 
 
-class Box:
+class Box(OrderedDict):
     def __init__(self, idx):
-        self.index = idx
-        self.tuples = []
+        self.idx = idx
 
-    def add(self,k,v):
-        i = self.find(k)
-        if i is None:
-            self.tuples.append((k,v))
-        else:
-            self.tuples[i] = (k,v)
-
-    def find(self,key):
-        t = self.tuples
-        for i,(k,_) in enumerate(t):
-            if k==key:
-                return i
-        return None
-    
-    def delete(self,k):
-        i = self.find(k)
-        if i is None:
-            return
-        self.tuples = self.tuples[:i] + self.tuples[i+1:]
+    def pop(self,k):
+        if k in self:
+            super().pop(k)
 
     def power(self):
-        return (self.index+1) * sum((i+1) * v for i,(_,v) in enumerate(self.tuples))
+        return (self.idx+1) * sum((i+1) * v for i,(_,v) in enumerate(self.items()))
             
 
 def two(inputs):
@@ -45,10 +29,10 @@ def two(inputs):
     for instr in inputs[0].split(','):
         if instr[-1] == '-':
             k=instr[:-1]
-            boxes[calc_hash(k)].delete(k)
+            boxes[calc_hash(k)].pop(k)
         else:
             k,v = instr.split('=')
-            boxes[calc_hash(k)].add(k,int(v))
+            boxes[calc_hash(k)][k] = int(v)
 
     return sum(box.power() for box in boxes)
 
